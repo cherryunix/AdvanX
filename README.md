@@ -36,11 +36,14 @@ The cache contains 48 aligned arrays per source. The main tensors are face landm
 - Optional: Intel iGPU and a Windows FFmpeg build with D3D11VA support
 - SSH and SCP for a second node
 
-Install the lightweight package first:
+Create the locked development environment with uv:
 
 ```bash
-python -m pip install -e .
+uv sync --locked
+uv run pytest
 ```
+
+The repository includes `uv.toml`, `.python-version`, and `uv.lock`. The default sync installs the lightweight project plus its test group. Use `uv sync --locked --no-dev` for the package without developer tooling.
 
 GPU runtime packages are intentionally not pinned in `pyproject.toml`: CUDA, TensorRT, PyTorch, and PyNvVideoCodec must match the installed driver and platform. The validated environment is documented in [docs/runtime.md](docs/runtime.md).
 
@@ -124,7 +127,7 @@ The included performance slide uses a fixed 114-video, 11:52:17 workload normali
 
 ## Slides
 
-The two 1920×1080 slides are authored in plain HTML/CSS at [slides/advanx-keynote.html](slides/advanx-keynote.html). Open the file in a browser and use the arrow keys. Add `?slide=1&export=1` or `?slide=2&export=1` for deterministic capture.
+The two 1920×1080 slides are authored in plain HTML/CSS at [slides/advanx-keynote.html](slides/advanx-keynote.html). Open the file in a browser and use the arrow keys. Add `?slide=1&export=1` or `?slide=2&export=1` for deterministic capture. A vertical 1920×2160 social version is available as [HTML](slides/advanx-social.html) and [PNG](assets/advanx-social-vertical.png).
 
 ## License
 

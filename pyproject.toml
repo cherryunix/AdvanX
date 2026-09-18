@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "advanx-hpc"
-version = "0.1.0"
+version = "0.1.1"
 description = "A heterogeneous, exact-timeline video pose preprocessing pipeline"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -20,8 +20,8 @@ classifiers = [
   "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 
-[project.optional-dependencies]
-test = ["pytest>=8"]
+[dependency-groups]
+dev = ["pytest>=8"]
 
 [tool.setuptools.packages.find]
 include = ["advanx*"]

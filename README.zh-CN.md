@@ -18,6 +18,6 @@ AdvanX 把长视频变成严格对齐时间轴的逐帧数值缓存：人脸 478
 
 ![AdvanX 架构](assets/advanx-architecture.png)
 
-安装与命令请看英文 [README](README.md)。模型、ONNX 和 TensorRT engine 均不随仓库发布，也不会自动下载；请使用自己有权使用的模型资产。运行环境、模型目录和性能口径分别见 [runtime](docs/runtime.md)、[models](docs/models.md) 与 [benchmark](docs/benchmark.md)。
+仓库包含 `uv.toml`、`.python-version` 和 `uv.lock`，执行 `uv sync --locked` 后即可运行基础测试。安装与完整命令请看英文 [README](README.md)。模型、ONNX 和 TensorRT engine 均不随仓库发布，也不会自动下载；请使用自己有权使用的模型资产。运行环境、模型目录和性能口径分别见 [runtime](docs/runtime.md)、[models](docs/models.md) 与 [benchmark](docs/benchmark.md)。
 
-两页 1920×1080 的 HTML 幻灯片位于 [slides/advanx-keynote.html](slides/advanx-keynote.html)，方向键切换，URL 加 `?slide=1&export=1` 或 `?slide=2&export=1` 可稳定导出。
+两页 1920×1080 的 HTML 幻灯片位于 [slides/advanx-keynote.html](slides/advanx-keynote.html)，方向键切换，URL 加 `?slide=1&export=1` 或 `?slide=2&export=1` 可稳定导出。朋友圈竖向长图提供 [HTML 源文件](slides/advanx-social.html) 和 [1920×2160 PNG](assets/advanx-social-vertical.png)。

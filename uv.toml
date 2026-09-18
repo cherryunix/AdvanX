@@ -1,0 +1,11 @@
+# Prefer an existing host interpreter, while allowing uv to provision Python
+# when a compatible 3.10 runtime is not installed.
+python-preference = "system"
+python-downloads = "automatic"
+
+# Copy mode remains reliable when the repository or uv cache lives across
+# WSL, NTFS, containers, or separate filesystems.
+link-mode = "copy"
+compile-bytecode = true
+
+resolution = "highest"

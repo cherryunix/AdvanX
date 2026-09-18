@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AdvanX — Social</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      width: 1920px;
+      height: 2160px;
+      margin: 0;
+      overflow: hidden;
+      background: #000;
+    }
+    main {
+      position: relative;
+      width: 1920px;
+      height: 2160px;
+    }
+    img {
+      display: block;
+      width: 1920px;
+      height: 1080px;
+      object-fit: contain;
+    }
+    .seam {
+      position: absolute;
+      z-index: 2;
+      left: 0;
+      top: 1076px;
+      width: 1920px;
+      height: 8px;
+      background: linear-gradient(to bottom, #000 0%, #f5f5f7 100%);
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <main aria-label="AdvanX performance and architecture">
+    <img src="../assets/advanx-performance.png" alt="AdvanX performance: 31.7 times faster" />
+    <img src="../assets/advanx-architecture.png" alt="AdvanX architecture" />
+    <div class="seam" aria-hidden="true"></div>
+  </main>
+</body>
+</html>
