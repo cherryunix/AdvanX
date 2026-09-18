@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+
+models/
+.models/
+runs/
+outputs/
+*.engine
+*.plan
+*.onnx
+*.task
+*.tflite
+
+slides/.chrome-profile/

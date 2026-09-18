@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AdvanX — Keynote</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #f5f5f7;
+      --muted: #86868b;
+      --hairline: rgba(255,255,255,.13);
+      --blue: #0a84ff;
+      --violet: #bf5af2;
+      --orange: #ff9f0a;
+    }
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+    body {
+      background: #000;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      font-variant-numeric: tabular-nums;
+    }
+    .viewport { position: fixed; inset: 0; background: #000; }
+    .slide {
+      position: absolute;
+      width: 1920px;
+      height: 1080px;
+      inset: 0 auto auto 0;
+      transform-origin: top left;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .28s ease;
+      overflow: hidden;
+    }
+    .slide.active { opacity: 1; pointer-events: auto; }
+    .eyebrow {
+      font-size: 28px;
+      line-height: 1;
+      letter-spacing: -.02em;
+      font-weight: 650;
+      color: var(--muted);
+    }
+    .brand { color: var(--ink); }
+    .spectral-text {
+      color: transparent;
+      background: linear-gradient(104deg, #74d5ff 5%, #7d7cff 34%, #d75cff 59%, #ff7b7b 78%, #ffd36c 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+    }
+
+    /* Slide 1: result first. */
+    .performance {
+      background:
+        radial-gradient(1100px 720px at 25% 44%, rgba(60,86,255,.11), transparent 65%),
+        radial-gradient(900px 680px at 72% 70%, rgba(255,92,170,.055), transparent 68%),
+        #000;
+      color: var(--ink);
+      padding: 92px 112px 90px;
+    }
+    .performance .topline {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+    }
+    .performance .context {
+      font-size: 22px;
+      letter-spacing: -.01em;
+      color: #6e6e73;
+    }
+    .performance .grid {
+      display: grid;
+      grid-template-columns: 1.03fr .97fr;
+      gap: 120px;
+      align-items: center;
+      height: 820px;
+    }
+    .hero-number {
+      font-size: 306px;
+      line-height: .84;
+      font-weight: 720;
+      letter-spacing: -.085em;
+      margin-left: -17px;
+    }
+    .hero-copy {
+      margin-top: 35px;
+      font-size: 60px;
+      line-height: 1.05;
+      letter-spacing: -.045em;
+      font-weight: 620;
+    }
+    .hero-subcopy {
+      margin-top: 23px;
+      max-width: 620px;
+      font-size: 26px;
+      line-height: 1.34;
+      letter-spacing: -.02em;
+      color: var(--muted);
+    }
+    .time-panel {
+      border-left: 1px solid var(--hairline);
+      padding-left: 82px;
+      margin-top: 20px;
+    }
+    .time-row { padding: 34px 0 38px; }
+    .time-row + .time-row { border-top: 1px solid var(--hairline); }
+    .time-label {
+      font-size: 22px;
+      line-height: 1;
+      color: var(--muted);
+      margin-bottom: 19px;
+      letter-spacing: -.015em;
+    }
+    .time-value {
+      font-size: 100px;
+      line-height: 1;
+      font-weight: 615;
+      letter-spacing: -.064em;
+    }
+    .time-note {
+      margin-top: 16px;
+      font-size: 24px;
+      color: #a1a1a6;
+      letter-spacing: -.02em;
+    }
+    .performance .foot {
+      position: absolute;
+      left: 112px;
+      right: 112px;
+      bottom: 68px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 20px;
+      color: #6e6e73;
+    }
+
+    /* Slide 2: an architectural map, not a dashboard. */
+    .architecture {
+      color: #1d1d1f;
+      background:
+        radial-gradient(800px 600px at 74% 38%, rgba(74,138,255,.10), transparent 70%),
+        radial-gradient(760px 620px at 38% 77%, rgba(191,90,242,.075), transparent 72%),
+        #f5f5f7;
+      padding: 78px 104px 72px;
+    }
+    .architecture .eyebrow { color: #6e6e73; }
+    .architecture .brand { color: #1d1d1f; }
+    .arch-title {
+      margin-top: 25px;
+      font-size: 78px;
+      line-height: .98;
+      letter-spacing: -.057em;
+      font-weight: 680;
+      max-width: 880px;
+    }
+    .arch-subtitle {
+      margin-top: 22px;
+      font-size: 26px;
+      color: #6e6e73;
+      letter-spacing: -.02em;
+    }
+    .map {
+      position: absolute;
+      left: 104px;
+      right: 104px;
+      top: 360px;
+      bottom: 104px;
+    }
+    .flow-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+    .map-node {
+      position: absolute;
+      border-radius: 34px;
+      box-shadow: 0 14px 48px rgba(0,0,0,.075), inset 0 0 0 1px rgba(0,0,0,.055);
+      background: rgba(255,255,255,.78);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+    }
+    .map-node .kicker {
+      font-size: 18px;
+      line-height: 1;
+      color: #86868b;
+      font-weight: 680;
+      letter-spacing: .065em;
+      text-transform: uppercase;
+    }
+    .map-node h2 {
+      margin: 15px 0 0;
+      font-size: 34px;
+      line-height: 1.05;
+      letter-spacing: -.04em;
+      font-weight: 670;
+    }
+    .map-node p {
+      margin: 13px 0 0;
+      color: #6e6e73;
+      font-size: 20px;
+      line-height: 1.35;
+      letter-spacing: -.018em;
+    }
+    .prepare { left: 0; top: 143px; width: 280px; height: 240px; padding: 31px 32px; }
+    .scheduler {
+      left: 366px; top: 143px; width: 250px; height: 240px; padding: 31px 32px;
+      background: #1d1d1f; color: #f5f5f7;
+      box-shadow: 0 22px 60px rgba(0,0,0,.17);
+    }
+    .scheduler .kicker, .scheduler p { color: #98989d; }
+    .compute {
+      left: 728px;
+      width: 520px;
+      height: 215px;
+      padding: 31px 34px;
+      display: grid;
+      grid-template-columns: 1fr 150px;
+      gap: 24px;
+      align-items: center;
+    }
+    .compute.local { top: 0; }
+    .compute.remote { bottom: 0; }
+    .decode-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 19px;
+    }
+    .pill {
+      padding: 8px 12px 9px;
+      border-radius: 99px;
+      background: #f0f0f2;
+      color: #515154;
+      font-size: 15px;
+      line-height: 1;
+      font-weight: 620;
+      white-space: nowrap;
+    }
+    .trt {
+      border-left: 1px solid rgba(0,0,0,.08);
+      padding-left: 25px;
+      font-size: 22px;
+      line-height: 1.12;
+      letter-spacing: -.025em;
+      font-weight: 680;
+    }
+    .trt small {
+      display: block;
+      color: #86868b;
+      font-size: 15px;
+      font-weight: 560;
+      margin-bottom: 9px;
+      letter-spacing: 0;
+    }
+    .cache {
+      right: 0; top: 59px; width: 350px; height: 408px; padding: 34px 36px;
+      background: rgba(255,255,255,.92);
+    }
+    .metric {
+      padding: 15px 0;
+      border-bottom: 1px solid rgba(0,0,0,.065);
+      font-size: 19px;
+      letter-spacing: -.02em;
+      font-weight: 580;
+    }
+    .metric:last-child { border-bottom: 0; }
+    .architecture .footnote {
+      position: absolute;
+      right: 104px;
+      top: 106px;
+      text-align: right;
+      color: #86868b;
+      font-size: 19px;
+      line-height: 1.45;
+    }
+
+    .nav {
+      position: fixed;
+      z-index: 10;
+      left: 50%;
+      bottom: 20px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      padding: 9px 12px;
+      border-radius: 99px;
+      background: rgba(44,44,46,.58);
+      backdrop-filter: blur(18px);
+    }
+    .nav button {
+      appearance: none;
+      width: 8px;
+      height: 8px;
+      border: 0;
+      padding: 0;
+      border-radius: 50%;
+      background: rgba(255,255,255,.35);
+      cursor: pointer;
+    }
+    .nav button.active { background: #fff; }
+    body.export .nav { display: none; }
+    body.export .slide { transition: none; }
+  </style>
+</head>
+<body>
+  <main class="viewport">
+    <section class="slide performance" data-slide="1" aria-label="Performance">
+      <div class="topline">
+        <div class="eyebrow"><span class="brand">AdvanX</span> · yet another HPC story</div>
+        <div class="context">114 videos · 11:52:17 · 1080p30</div>
+      </div>
+      <div class="grid">
+        <div>
+          <div class="hero-number spectral-text">31.7×</div>
+          <div class="hero-copy">Faster, end to end.</div>
+          <div class="hero-subcopy">The same vision workload moves from hours to minutes.</div>
+        </div>
+        <div class="time-panel">
+          <div class="time-row">
+            <div class="time-label">MediaPipe pipeline</div>
+            <div class="time-value">2:57:00</div>
+            <div class="time-note">4.02× real time</div>
+          </div>
+          <div class="time-row">
+            <div class="time-label">AdvanX</div>
+            <div class="time-value spectral-text">0:05:35</div>
+            <div class="time-note">127.5× real time</div>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span>Accelerated Decoding and Vision Across Nodes</span><span>31.7×</span></div>
+    </section>
+
+    <section class="slide architecture" data-slide="2" aria-label="Architecture">
+      <div class="eyebrow"><span class="brand">AdvanX</span> · architecture</div>
+      <div class="arch-title">One timeline.<br />Every engine.</div>
+      <div class="arch-subtitle">Accelerated Decoding and Vision Across Nodes</div>
+      <div class="footnote">Whole-source scheduling<br />Exact 24 fps frame mapping</div>
+      <div class="map">
+        <svg class="flow-svg" viewBox="0 0 1712 616" aria-hidden="true">
+          <defs>
+            <linearGradient id="flowA" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#0a84ff"/><stop offset=".52" stop-color="#7d7cff"/><stop offset="1" stop-color="#bf5af2"/>
+            </linearGradient>
+            <linearGradient id="flowB" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#bf5af2"/><stop offset="1" stop-color="#ff9f0a"/>
+            </linearGradient>
+            <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+          <path d="M280 263 H366" fill="none" stroke="url(#flowA)" stroke-width="4" stroke-linecap="round" filter="url(#softGlow)"/>
+          <path d="M616 263 C665 263 671 108 728 108" fill="none" stroke="url(#flowA)" stroke-width="4" stroke-linecap="round" filter="url(#softGlow)"/>
+          <path d="M616 263 C665 263 671 508 728 508" fill="none" stroke="url(#flowA)" stroke-width="4" stroke-linecap="round" filter="url(#softGlow)"/>
+          <path d="M1248 108 C1315 108 1320 263 1362 263" fill="none" stroke="url(#flowB)" stroke-width="4" stroke-linecap="round" filter="url(#softGlow)"/>
+          <path d="M1248 508 C1315 508 1320 263 1362 263" fill="none" stroke="url(#flowB)" stroke-width="4" stroke-linecap="round" filter="url(#softGlow)"/>
+          <circle cx="280" cy="263" r="7" fill="#0a84ff"/><circle cx="616" cy="263" r="7" fill="#7d7cff"/><circle cx="1362" cy="263" r="7" fill="#ff9f0a"/>
+        </svg>
+        <article class="map-node prepare">
+          <div class="kicker">Prepare</div><h2>Orient once.<br />Sample exactly.</h2><p>0° / 90° / 180° / 270°<br />24 fps timeline</p>
+        </article>
+        <article class="map-node scheduler">
+          <div class="kicker">Schedule</div><h2>Whole sources.</h2><p>Weighted by measured throughput</p>
+        </article>
+        <article class="map-node compute local">
+          <div><div class="kicker">Node A</div><h2>RTX 4090 Laptop</h2><div class="decode-list"><span class="pill">NVDEC ×2</span><span class="pill">D3D11VA</span><span class="pill">P/E CPU</span></div></div>
+          <div class="trt"><small>Vision</small>TensorRT<br />FP16</div>
+        </article>
+        <article class="map-node compute remote">
+          <div><div class="kicker">Node B</div><h2>RTX 4080 Desktop</h2><div class="decode-list"><span class="pill">NVDEC</span><span class="pill">P/E CPU</span><span class="pill">LAN staging</span></div></div>
+          <div class="trt"><small>Vision</small>TensorRT<br />FP16</div>
+        </article>
+        <article class="map-node cache">
+          <div class="kicker">Per-frame cache</div><h2>One numerical record.</h2>
+          <div class="metric">Face 478 + iris</div><div class="metric">Pose 33 + world</div><div class="metric">Hands 21 ×2</div><div class="metric">3D head pose + gaze</div>
+        </article>
+      </div>
+    </section>
+  </main>
+  <nav class="nav" aria-label="Slides"><button data-go="1" aria-label="Performance"></button><button data-go="2" aria-label="Architecture"></button></nav>
+  <script>
+    const params = new URLSearchParams(location.search);
+    let current = Math.min(2, Math.max(1, Number(params.get('slide') || 1)));
+    if (params.has('export')) document.body.classList.add('export');
+    const slides = [...document.querySelectorAll('.slide')];
+    const dots = [...document.querySelectorAll('[data-go]')];
+    function fit() {
+      const scale = Math.min(innerWidth / 1920, innerHeight / 1080);
+      const x = (innerWidth - 1920 * scale) / 2;
+      const y = (innerHeight - 1080 * scale) / 2;
+      slides.forEach(s => s.style.transform = `translate(${x / scale}px, ${y / scale}px) scale(${scale})`);
+    }
+    function show(index) {
+      current = index;
+      slides.forEach(s => s.classList.toggle('active', Number(s.dataset.slide) === current));
+      dots.forEach(d => d.classList.toggle('active', Number(d.dataset.go) === current));
+      const url = new URL(location.href); url.searchParams.set('slide', current); history.replaceState(null, '', url);
+    }
+    addEventListener('resize', fit);
+    addEventListener('keydown', e => {
+      if (['ArrowRight','PageDown',' '].includes(e.key)) show(Math.min(2, current + 1));
+      if (['ArrowLeft','PageUp'].includes(e.key)) show(Math.max(1, current - 1));
+    });
+    dots.forEach(d => d.addEventListener('click', () => show(Number(d.dataset.go))));
+    fit(); show(current);
+  </script>
+</body>
+</html>
