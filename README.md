@@ -14,6 +14,7 @@ AdvanX turns long-form source videos into an exact, per-frame numerical cache of
 - Schedules complete source videos by measured lane throughput and remote transfer cost.
 - Mixes NVDEC, Windows Intel D3D11VA under WSL, and FFmpeg software-decode lanes.
 - Writes restartable, memory-mapped NumPy columns plus smoothed traces and motion envelopes.
+- Turns the pose cache into ranked 8–20 second training intervals and a local visual review page.
 - Validates source signatures, full decode coverage, frame indices, timestamps, and every output array.
 
 ![AdvanX architecture](assets/advanx-architecture.png)
@@ -120,6 +121,30 @@ python tools/validate_holistic_output.py \
   runs/catalog.json outputs/holistic24 \
   --target-fps 24 --report outputs/holistic24/validation.json
 ```
+
+Build loose, standard, and strict interval manifests from the validated cache:
+
+```bash
+python tools/segment_pose_cache.py runs/catalog.json outputs/holistic24 \
+  --output-dir outputs/segments --workers 8
+```
+
+The segmenter detects re-encoded copies whose decoded pose timelines are identical,
+keeps one canonical source, and records the excluded paths in `duplicates.json`. It
+does not cut or transcode source video. Each candidate carries exact source times,
+source frame indices, head-pose and gaze statistics, coverage, score, and shot size.
+
+Generate an offline review page with three-frame previews and direct playback of
+each source interval:
+
+```bash
+python tools/build_segment_review.py outputs/segments runs/catalog.json \
+  --output-dir outputs/segment-review --workers 6
+```
+
+Open `outputs/segment-review/index.html`, mark intervals to keep or drop, and use
+**Export decisions** to download the review JSON. See
+[docs/segmentation.md](docs/segmentation.md) for profile semantics and limits.
 
 ## Performance figure
 
