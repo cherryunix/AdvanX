@@ -18,10 +18,21 @@ def main() -> None:
     parser.add_argument("segments", type=Path)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--title", default="AdvanX 边界片段复核")
+    parser.add_argument(
+        "--description",
+        default="按当前排序逐段检查，人工决定优先于所有自动规则。",
+    )
+    parser.add_argument("--sort", choices=("boundary", "gaze", "rank"), default="boundary")
+    parser.add_argument("--export-name", default="advanx-review-decisions.json")
     parser.add_argument("--workers", type=int, default=min(6, os.cpu_count() or 2))
     args = parser.parse_args()
     rows = json.loads(args.segments.read_text())
-    rows.sort(key=lambda row: abs(row.get("distance_from_threshold", 0)))
+    if args.sort == "gaze":
+        rows.sort(key=lambda row: -row.get("camera_gaze_risk", 0))
+    elif args.sort == "rank":
+        rows.sort(key=lambda row: row.get("rank", 0))
+    else:
+        rows.sort(key=lambda row: abs(row.get("distance_from_threshold", 0)))
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
     jobs = []
@@ -54,16 +65,16 @@ def main() -> None:
 .bar{{position:sticky;top:0;z-index:3;background:#080a08ed;padding:12px 0;display:flex;gap:8px;flex-wrap:wrap}}button,input{{font:inherit;border:1px solid #3c4738;background:#171d15;color:var(--text);padding:8px 12px;border-radius:8px}}button{{cursor:pointer}}button:hover{{border-color:var(--green)}}
 .grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px}}.candidate{{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}}.candidate[data-decision=keep]{{border-color:var(--green)}}.candidate[data-decision=drop]{{opacity:.45;border-color:var(--red)}}.candidate img{{width:100%;display:block;aspect-ratio:720/320;object-fit:cover;background:#000}}.candidate-body{{padding:14px}}.candidate-top{{display:flex;justify-content:space-between}}.candidate h3{{font-size:15px;margin:8px 0;overflow-wrap:anywhere}}.candidate p{{font-size:13px;margin:4px 0}}.badge{{font-size:12px;padding:2px 8px;border-radius:20px;background:#3b3514;color:#ffe48b}}.actions{{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}}.keep{{color:#bde979}}.drop{{color:#ffaaa3}}
 dialog{{width:min(920px,94vw);background:#0b0d0a;color:var(--text);border:1px solid var(--line);border-radius:14px;padding:16px}}dialog video{{width:100%;max-height:76vh;background:#000}}dialog::backdrop{{background:#000c}}
-</style></head><body><header><h1>{html.escape(args.title)}</h1><p>{len(rows)} 段位于人工学得的 yaw 边界附近，按距离阈值从近到远排列。原有 92 条人工标签已经锁定，不在此页重复出现。</p></header>
-<main><div class="bar"><input id="search" placeholder="筛选路径"><button onclick="exportDecisions()">导出这批决定</button><span id="progress"></span></div><div class="grid">{cards}</div></main>
+</style></head><body><header><h1>{html.escape(args.title)}</h1><p>{len(rows)} 段。{html.escape(args.description)}</p></header>
+<main><div class="bar"><input id="search" placeholder="筛选路径"><button onclick="setView('pending')">只看未决定</button><button onclick="setView('keep')">已保留</button><button onclick="setView('drop')">已淘汰</button><button onclick="setView('all')">全部</button><button onclick="exportDecisions()">导出这批决定</button><span id="progress"></span></div><div class="grid">{cards}</div></main>
 <dialog id="player"><h3 id="playerTitle"></h3><video id="video" controls></video><p><button onclick="closePlayer()">关闭</button></p></dialog>
 <script>
-const key='advanx-boundary-review-decisions',decisions=JSON.parse(localStorage.getItem(key)||'{{}}');
+const key='advanx-review-decisions:'+location.pathname,decisions=JSON.parse(localStorage.getItem(key)||'{{}}');let view='pending';
 function paint(){{document.querySelectorAll('.candidate').forEach(c=>c.dataset.decision=decisions[c.dataset.id]||'');const n=Object.keys(decisions).length;document.getElementById('progress').textContent=`已决定 ${{n}} / {len(rows)}`;filterCards()}}
 function decide(id,value){{if(value)decisions[id]=value;else delete decisions[id];localStorage.setItem(key,JSON.stringify(decisions));paint()}}
-function filterCards(){{const q=document.getElementById('search').value.toLowerCase();document.querySelectorAll('.candidate').forEach(c=>c.style.display=!q||c.dataset.path.toLowerCase().includes(q)?'':'none')}}document.getElementById('search').oninput=filterCards;
+function setView(value){{view=value;filterCards()}}function filterCards(){{const q=document.getElementById('search').value.toLowerCase();document.querySelectorAll('.candidate').forEach(c=>{{const d=c.dataset.decision||'pending',showView=view==='all'||d===view;c.style.display=showView&&(!q||c.dataset.path.toLowerCase().includes(q))?'':'none'}})}}document.getElementById('search').oninput=filterCards;
 let stopAt=0;const video=document.getElementById('video');video.addEventListener('timeupdate',()=>{{if(stopAt&&video.currentTime>=stopAt)video.pause()}});function playSegment(src,start,end,title){{stopAt=end;document.getElementById('playerTitle').textContent=title+' · '+start.toFixed(2)+'s–'+end.toFixed(2)+'s';video.src=src;video.onloadedmetadata=()=>{{video.currentTime=start;video.play()}};document.getElementById('player').showModal()}}function closePlayer(){{video.pause();video.removeAttribute('src');video.load();document.getElementById('player').close()}}
-function exportDecisions(){{const blob=new Blob([JSON.stringify({{generated_at:new Date().toISOString(),decisions}},null,2)],{{type:'application/json'}}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='advanx-boundary-review-decisions.json';a.click();URL.revokeObjectURL(a.href)}}paint();
+function exportDecisions(){{const blob=new Blob([JSON.stringify({{generated_at:new Date().toISOString(),decisions}},null,2)],{{type:'application/json'}}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download={json.dumps(args.export_name)};a.click();URL.revokeObjectURL(a.href)}}paint();
 </script></body></html>"""
     (args.output_dir / "index.html").write_text(page)
     print(json.dumps({"segments": len(rows), "failures": len(failures)}))

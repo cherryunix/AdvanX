@@ -67,6 +67,19 @@ binary class, final class, and whether that result came from a human decision, t
 automatic rule, or the review band. `tools/build_review_queue.py` creates a focused
 offline page for the remaining boundary intervals.
 
+## Camera-relative gaze audit
+
+Head yaw alone cannot show whether the subject is looking into the camera.
+`tools/enrich_camera_gaze.py` starts with the iris zero point from confirmed
+camera-looking calibration frames, then learns how much the iris counter-rotates as
+the head turns in human-kept intervals. It reports the P95 horizontal residual after
+that compensation, the P95 vertical iris displacement, and a review-priority ratio.
+
+The result is a ranking proxy. It is not a true 3D visual axis because the source
+videos do not provide personal eyeball geometry or complete camera calibration.
+`tools/build_review_queue.py --sort gaze` places the largest residuals first so a
+reviewer can label them efficiently.
+
 ## Known limit
 
 The current cache follows the primary subject. It cannot reliably reject a second

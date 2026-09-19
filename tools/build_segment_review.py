@@ -99,6 +99,14 @@ def card(row: dict, image_path: str, report_dir: Path, label: str) -> str:
     source = html.escape(video_url(report_dir, row["source_path"]))
     start = float(row["source_start_s"])
     end = float(row["source_end_s"])
+    gaze_details = ""
+    if row.get("camera_gaze_horizontal_residual_p95") is not None:
+        gaze_details = (
+            "<p>相机视线代理：水平残差 P95 "
+            f"{row['camera_gaze_horizontal_residual_p95']:.3f} · "
+            f"垂直偏移 P95 {row['p95_abs_gaze_vertical']:.3f} · "
+            f"风险 {row['camera_gaze_risk']:.2f}×</p>"
+        )
     return f"""
     <article class="candidate" data-id="{segment_id}" data-shot="{row['shot']}"
       data-score="{row['score']:.3f}" data-path="{path}">
@@ -109,6 +117,7 @@ def card(row: dict, image_path: str, report_dir: Path, label: str) -> str:
         <h3>{path}</h3>
         <p>{clock(start)} – {clock(end)} · {row['duration_s']:.1f}s · {row['shot']}</p>
         <p>头部 P95：pitch {row['p95_abs_pitch_deg']:.1f}° · yaw {row['p95_abs_yaw_deg']:.1f}° · roll {row['p95_abs_roll_deg']:.1f}°</p>
+        {gaze_details}
         <div class="actions">
           <button onclick="playSegment('{source}',{start:.6f},{end:.6f},'{path}')">播放区间</button>
           <button class="keep" onclick="decide('{segment_id}','keep')">保留</button>

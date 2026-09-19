@@ -162,6 +162,22 @@ Human decisions always override the fitted rule. Unlabelled intervals close to t
 learned boundary remain in a separate review queue instead of being forced into a
 keep or drop class.
 
+Add a camera-relative gaze audit to any segment subset, using the global
+camera-looking iris baseline and head/eye compensation learned from reviewed keeps:
+
+```bash
+python tools/enrich_camera_gaze.py outputs/reclassified/keep.json outputs/holistic24 \
+  --calibration-segments outputs/segments/standard/segments.json \
+  --decisions review-decisions.json \
+  --output outputs/reclassified/keep-camera-gaze.json
+
+python tools/build_review_queue.py outputs/reclassified/keep-camera-gaze.json \
+  --output-dir outputs/keep-review --sort gaze
+```
+
+This proxy ranks likely off-camera gaze first. It does not claim a calibrated 3D
+optical-axis angle, and it never overrides human decisions.
+
 ## Performance figure
 
 The included performance slide uses a fixed 114-video, 11:52:17 workload normalized to 1080p30. The prior MediaPipe pipeline is 2:57:00 at 4.02× real time; the measured-component capacity model for AdvanX is 0:05:35 at 127.5× real time, a 31.7× end-to-end speedup. Method and limits are recorded in [docs/benchmark.md](docs/benchmark.md).
