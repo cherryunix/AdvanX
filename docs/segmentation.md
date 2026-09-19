@@ -49,6 +49,24 @@ The HTML page can play the exact source range, filter by path and shot size, sto
 keep/drop decisions locally, and export them as JSON. Full interval manifests stay
 available as JSON and UTF-8 CSV.
 
+## Human calibration
+
+`tools/reclassify_segments.py` treats exported keep/drop decisions as supervised
+labels. It fits a one-dimensional decision boundary to the P95 absolute smoothed
+yaw, the dominant interpretable feature in the review set, and reports stratified
+cross-validation before applying the rule.
+
+The output has three classes:
+
+- `keep` and `drop` for labelled intervals and unlabelled intervals outside the
+  boundary margin;
+- `review` for unlabelled intervals close to the learned boundary.
+
+Every row records the fitted threshold, distance from the threshold, suggested
+binary class, final class, and whether that result came from a human decision, the
+automatic rule, or the review band. `tools/build_review_queue.py` creates a focused
+offline page for the remaining boundary intervals.
+
 ## Known limit
 
 The current cache follows the primary subject. It cannot reliably reject a second

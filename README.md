@@ -146,6 +146,22 @@ Open `outputs/segment-review/index.html`, mark intervals to keep or drop, and us
 **Export decisions** to download the review JSON. See
 [docs/segmentation.md](docs/segmentation.md) for profile semantics and limits.
 
+Learn an explainable pose threshold from those decisions and reclassify the full
+standard manifest:
+
+```bash
+python tools/reclassify_segments.py \
+  outputs/segments/standard/segments.json review-decisions.json \
+  --output-dir outputs/reclassified
+
+python tools/build_review_queue.py outputs/reclassified/review.json \
+  --output-dir outputs/boundary-review
+```
+
+Human decisions always override the fitted rule. Unlabelled intervals close to the
+learned boundary remain in a separate review queue instead of being forced into a
+keep or drop class.
+
 ## Performance figure
 
 The included performance slide uses a fixed 114-video, 11:52:17 workload normalized to 1080p30. The prior MediaPipe pipeline is 2:57:00 at 4.02× real time; the measured-component capacity model for AdvanX is 0:05:35 at 127.5× real time, a 31.7× end-to-end speedup. Method and limits are recorded in [docs/benchmark.md](docs/benchmark.md).
